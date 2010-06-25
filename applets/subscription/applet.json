@@ -1,0 +1,8 @@
+{
+	"name" : "Subscription",
+	"sms_name" : "Subscription",
+	"voice_title" : "Add / Remove Subscription",
+	"sms_title" : "Add / Remove Subscription",
+	"description" : "Adds or removes the number from a subscription.",
+	"type" : ["sms", "voice"]
+}

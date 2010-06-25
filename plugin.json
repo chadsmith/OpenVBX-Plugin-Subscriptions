@@ -1,0 +1,12 @@
+{
+	"name" : "Subscriptions",
+	"author" : "Chad Smith <chad@nospam.me>",
+	"description" : "Allows for opt-in subscriptions for bulk text and robo-calling.",
+	"url" : "http://twitter.com/chadsmith",
+	"links" : [{
+		"menu" : "Subscriptions",
+		"url" : "subscriptions",
+		"script" : "subscriptions.php",
+		"label" : "Manage Lists"
+	}]
+}
