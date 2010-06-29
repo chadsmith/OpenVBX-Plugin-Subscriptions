@@ -1,0 +1,5 @@
+{
+	"name" : "Dispatch",
+	"description" : "Dispatch the message to a list if the sender is an authorized user.",
+	"type" : ["sms"]
+}
