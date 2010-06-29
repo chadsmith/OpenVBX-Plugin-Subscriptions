@@ -18,7 +18,7 @@
 		$ci->twilio = new TwilioRestClient($ci->twilio_sid, $ci->twilio_token, $ci->twilio_endpoint);
 		if($id&&($flow = OpenVBX::getFlows(array('id' => $id, 'tenant_id' => $tenant_id)))&&$flow[0]->values['data'])
 			foreach($subscribers as $subscriber)
-				$response = $ci->twilio->request("Accounts/{$this->twilio_sid}/Calls", 'POST', array('Caller' => $number, 'Called' => $subscriber->value, 'Url' => site_url('twiml/start/voice/'.$id)));
+				$ci->twilio->request("Accounts/{$this->twilio_sid}/Calls", 'POST', array('Caller' => $number, 'Called' => $subscriber->value, 'Url' => site_url('twiml/start/voice/'.$id)));
 		elseif($message)
 			foreach($subscribers as $subscriber)
 				$ci->twilio->request("Accounts/{$this->twilio_sid}/SMS/Messages", 'POST', array('To' => $subscriber->value, 'From' => $number, 'Body' => $message));
