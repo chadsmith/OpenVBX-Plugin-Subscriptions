@@ -1,7 +1,7 @@
 <?php
 	$user = OpenVBX::getCurrentUser();
 	$tenant_id = $user->values['tenant_id'];
-	$ci = &get_instance();
+	$ci =& get_instance();
 	$selected = AppletInstance::getValue('list');
 	$action = AppletInstance::getValue('action');
 	$queries = explode(';', file_get_contents(dirname(dirname(dirname(__FILE__))).'/db.sql'));

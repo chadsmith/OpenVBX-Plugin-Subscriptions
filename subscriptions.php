@@ -1,15 +1,21 @@
 <?php
 	$user = OpenVBX::getCurrentUser();
 	$tenant_id = $user->values['tenant_id'];
-	$ci = &get_instance();
+	$ci =& get_instance();
 	$queries = explode(';', file_get_contents(dirname(__FILE__).'/db.sql'));
 	foreach($queries as $query)
 		if(trim($query))
 			$ci->db->query($query);
 	if($remove = intval($_POST['remove'])){
-		$ci->db->delete('subscribers_lists', array('id' => $remove, 'tenant' => $tenant_id));
-		if($ci->db->affected_rows())
-			$ci->db->delete('subscribers', array('list' => $remove));
+		if($list = intval($_POST['list'])){
+			if($ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows())
+				$ci->db->delete('subscribers', array('id' => $remove, 'list' => $list));
+		}
+		else{
+			$ci->db->delete('subscribers_lists', array('id' => $remove, 'tenant' => $tenant_id));
+			if($ci->db->affected_rows())
+				$ci->db->delete('subscribers', array('list' => $remove));
+		}
 		die();
 	}
 	if(($list = intval($_POST['list']))&&($number = $_POST['number'])&&(($message = $_POST['message'])||($id = intval($_POST['flow'])))&&$ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows()){
@@ -38,15 +44,21 @@
 		font-weight:bold;
 		margin-top:0;
 	}
-	.vbx-subscriptions .list{
+	.vbx-subscriptions .list,
+	.vbx-subscriptions .subscriber {
 		clear:both;	
 		width:95%;
 		overflow:hidden;
-		margin:5px auto;
+		margin:0 auto;
 		padding:5px 0;
 		border-bottom:1px solid #eee;
 	}
-	.vbx-subscriptions .list span {
+	.vbx-subscriptions .subscriber {
+		display:none;
+		background:#ccc;
+	}
+	.vbx-subscriptions .list span,
+	.vbx-subscriptions .subscriber span {
 		display:inline-block;
 		width:20%;
 		text-align:center;
@@ -54,8 +66,9 @@
 		vertical-align:middle;
 		line-height:24px;
 	}
-	.vbx-subscriptions .list a{
+	.vbx-subscriptions .list a {
 		text-decoration:none;
+		color:#111;
 	}
 	.vbx-subscriptions form {
 		display:none;
@@ -76,7 +89,6 @@
 		background-position:-34px 0;
 	}
 	.vbx-subscriptions a.delete {
-		width:24px;
 		background:transparent url(/assets/i/action-icons-sprite.png) no-repeat -68px 0;
 	}
 </style>
@@ -159,22 +171,37 @@
 		<div class="list">
 			<h3>
 				<span>Name</span>
-				<span>Subscribers</span>
+				<span>Subscribed</span>
 				<span>SMS</span>
 				<span>Call</span>
 				<span>Delete</span>
 			</h3>
 		</div>
-<?php foreach($lists as $list): ?>
+<?php foreach($lists as $list):
+	$subscribers=$ci->db->query(sprintf('SELECT id, value, joined FROM subscribers WHERE list=%d',$list->id))->result();
+?>
 		<div class="list" id="list_<?php echo $list->id; ?>">
 			<p>
 				<span><?php echo $list->name; ?></span>
-				<span><?php echo $ci->db->query(sprintf('SELECT COUNT(id) AS num FROM subscribers WHERE list=%d',$list->id))->row()->num; ?></span>
+				<span><a href="" class="subscribers"><?php echo count($subscribers); ?></a></span>
 				<span><a href="" class="sms">SMS</a></span>
 				<span><a href="" class="call">Call</a></span>
 				<span><a href="" class="delete">X</a></span>
 			</p>
 		</div>
+<?php if(count($subscribers)): ?>
+<?php foreach($subscribers as $subscriber): ?>
+		<div class="subscriber list_<?php echo $list->id; ?>" id="subscriber_<?php echo $list->id; ?>_<?php echo $subscriber->id; ?>">
+			<p>
+				<span><?php echo $subscriber->value; ?></span>
+				<span><?php echo date('d-M-Y', $subscriber->joined); ?></span>
+				<span>&nbsp;</span>
+				<span>&nbsp;</span>
+				<span><a href="" class="delete">X</a></span>
+			</p>
+		</div>
+<?php endforeach; ?>
+<?php endif; ?>
 <?php endforeach; ?>
 <?php endif; ?>
     </div>
