@@ -17,7 +17,7 @@ else
 					$dispatch = true;
 			break;
 		case 'VBX_Group':
-			foreach($moderator->users as $user){
+			foreach($dispatcher->users as $user){
 				$user = VBX_User::get($user->user_id);
 				foreach($user->devices as $device)
 					if($sender == $device->value)
