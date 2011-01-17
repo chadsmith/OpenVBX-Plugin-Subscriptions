@@ -16,7 +16,7 @@
 			if($ci->db->affected_rows())
 				$ci->db->delete('subscribers', array('list' => $remove));
 		}
-		die();
+		die;
 	}
 	if(($list = intval($_POST['list']))&&($number = $_POST['number'])&&(($message = $_POST['message'])||($id = intval($_POST['flow'])))&&$ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows()){
 		$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list=%d',$list))->result();
@@ -28,6 +28,29 @@
 		elseif($message)
 			foreach($subscribers as $subscriber)
 				$ci->twilio->request("Accounts/{$this->twilio_sid}/SMS/Messages", 'POST', array('To' => $subscriber->value, 'From' => $number, 'Body' => $message));
+	}
+	if(($list = intval($_POST['list']))&&preg_match_all('/(?:\([2-9][0-8]\d\)\ ?|[2-9][0-8]\d[\- \.\/]?)[2-9]\d{2}[- \.\/]?\d{4}\b/', $_POST['numbers'], $numbers)&&$ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows()){
+		$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list=%d', $list))->result();
+		foreach($subscribers as &$subscriber)
+			$subscriber = $subscriber->value;
+		$numbers = array_diff(array_unique(array_map(normalize_phone_to_E164, $numbers[0])), $subscribers);
+		foreach($numbers as $number)
+			$ci->db->insert('subscribers', array(
+				'list' => $list,
+				'value' => $number,
+				'joined' => time()
+			));
+	}
+	if(($list = intval($_POST['export']))&&($list = $ci->db->query(sprintf('SELECT id, name FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->row())){
+		$subscribers = $ci->db->query(sprintf('SELECT value, joined FROM subscribers WHERE list=%d', $list->id))->result();
+		ob_clean();
+		header('Content-type: text/plain');
+		header('Content-Disposition: attachment; filename='.preg_replace('/\W/', '', $list->name).'.csv');
+		?>"Number","Subscribed"
+<?php	foreach($subscribers as $subscriber): ?>
+"<?php echo $subscriber->value; ?>","<?php echo date('d-M-Y', $subscriber->joined); ?>"
+<?php 	endforeach;
+		die;
 	}
 	if($name = htmlentities($_POST['name']))
 		$ci->db->insert('subscribers_lists', array(
@@ -96,20 +119,71 @@
 	<div class="vbx-content-menu vbx-content-menu-top">
 		<h2 class="vbx-content-heading">Subscription Lists</h2>
 		<ul class="vbx-menu-items-right">
-			<li class="menu-item"><button id="button-add-list" class="inline-button add-button"><span>Add List</span></button></li>
+			<li class="menu-item">
+				<button id="button-import-list" class="inline-button submit-button"><span>Import</span></button>
+			</li>
+			<li class="menu-item">
+				<button id="button-export-list" class="inline-button submit-button"><span>Export</span></button>
+			</li>
+			<li class="menu-item">
+				<button id="button-add-list" class="inline-button add-button"><span>Add List</span></button>
+			</li>
 		</ul>
 	</div><!-- .vbx-content-menu -->
     <div class="vbx-table-section vbx-subscriptions">
-		<form method="post" action="">
+		<form class="add add-list" method="post" action="">
 			<h3>Add List</h3>
 			<fieldset class="vbx-input-container">
-				<label class="field-label">List Name
+				<label class="field-label">
 					<input type="text" class="medium" name="name" />
 				</label>
 				<p><button type="submit" class="submit-button"><span>Save</span></button></p>
 			</fieldset>
 		</form>
-		<form method="post" action="">
+		<form class="add import-list" method="post" action="">
+			<h3>Add Numbers</h3>
+			<fieldset class="vbx-input-container">
+<?php if(count($lists)): ?>
+				<p>
+					<label class="field-label">
+						<select name="list" class="medium">
+<?php foreach($lists as $list): ?>
+							<option value="<?php echo $list->id; ?>"><?php echo $list->name; ?></option>
+<?php endforeach; ?>
+						</select>
+					</label>
+				</p>
+				<p>
+					<label class="field-label">Numbers
+						<textarea rows="20" cols="100" name="numbers" class="medium"></textarea>
+					</label>
+				</p>
+				<p><button type="submit" class="submit-button"><span>Import</span></button></p>
+<?php else: ?>
+				<p>You do not have any lists!</p>
+<?php endif; ?>
+			</fieldset>
+		</form>
+		<form class="export-list" method="post" action="">
+			<h3>Export List</h3>
+			<fieldset class="vbx-input-container">
+<?php if(count($lists)): ?>
+				<p>
+					<label class="field-label">
+						<select name="export" class="medium">
+<?php foreach($lists as $list): ?>
+							<option value="<?php echo $list->id; ?>"><?php echo $list->name; ?></option>
+<?php endforeach; ?>
+						</select>
+					</label>
+				</p>
+				<p><button type="submit" class="submit-button"><span>Export</span></button></p>
+<?php else: ?>
+				<p>You do not have any lists!</p>
+<?php endif; ?>
+			</fieldset>
+		</form>
+		<form class="update update-sms" method="post" action="">
 			<h3>Send update to <span></span></h3>
 			<fieldset class="vbx-input-container">
 <?php if(count($callerid_numbers)): ?>
@@ -134,7 +208,7 @@
 <?php endif; ?>
 			</fieldset>
 		</form>
-		<form method="post" action="">
+		<form class="update update-dial" method="post" action="">
 			<h3>Auto dial <span></span></h3>
 			<fieldset class="vbx-input-container">
 <?php if(count($callerid_numbers)): ?>
@@ -178,7 +252,7 @@
 			</h3>
 		</div>
 <?php foreach($lists as $list):
-	$subscribers=$ci->db->query(sprintf('SELECT id, value, joined FROM subscribers WHERE list=%d',$list->id))->result();
+	$subscribers=$ci->db->query(sprintf('SELECT id, value, joined FROM subscribers WHERE list=%d', $list->id))->result();
 ?>
 		<div class="list" id="list_<?php echo $list->id; ?>">
 			<p>

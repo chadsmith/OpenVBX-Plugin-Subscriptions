@@ -1,13 +1,23 @@
 $(function(){
+	$('#button-import-list').click(function(e) {
+		$('.vbx-subscriptions form:not(.import-list),.vbx-subscriptions .subscriber').slideUp();
+		$('.vbx-subscriptions form.import-list').slideToggle();
+		return false;
+	});
+	$('#button-export-list').click(function(e) {
+		$('.vbx-subscriptions form:not(.export-list),.vbx-subscriptions .subscriber').slideUp();
+		$('.vbx-subscriptions form.export-list').slideToggle();
+		return false;
+	});
 	$('#button-add-list').click(function(e) {
-		$('.vbx-subscriptions form:not(:first):visible,.vbx-subscriptions .subscriber').slideUp();
-		$('.vbx-subscriptions form:first').slideToggle();
+		$('.vbx-subscriptions form:not(.add-list),.vbx-subscriptions .subscriber').slideUp();
+		$('.vbx-subscriptions form.add-list').slideToggle();
 		return false;
 	});
 	$('.vbx-subscriptions a.subscribers').click(function(){
 		var $list=$(this).parent().parent().parent();
 		var id=$list.attr('id');
-		var $form=$('.vbx-subscriptions form:not(:first):visible');
+		var $form=$('.vbx-subscriptions form:not(.add):visible');
 		$('.vbx-subscriptions .subscriber:not(.'+id+'):visible').slideUp();
 		$('.vbx-subscriptions .subscriber.'+id).slideToggle();
 		$form[id.match(/([\d]+)/)[1]!=$form.find('input[name=list]').val()?'slideUp':'show']();
@@ -50,8 +60,8 @@ $(function(){
 		var $list=$(this).parent().parent().parent();
 		var id=$list.attr('id');
 		var list=id.match(/([\d]+)/)[1];
-		var $input=$('.vbx-subscriptions input[name=list]').eq(0);
-		var $form=$('.vbx-subscriptions form:eq(1)');
+		var $input=$('.vbx-subscriptions form.update-sms input[name=list]');
+		var $form=$('.vbx-subscriptions form.update-sms');
 		$('.vbx-subscriptions form:visible').not($form).add('.vbx-subscriptions .subscriber:not(.'+id+')').slideUp();
 		$form[list==$input.val()?'slideToggle':'slideDown']();
 		$form.children('h3').children('span').text($list.children().children('span').eq(0).text());
@@ -62,8 +72,8 @@ $(function(){
 		var $list=$(this).parent().parent().parent();
 		var id=$list.attr('id');
 		var list=id.match(/([\d]+)/)[1];
-		var $input=$('.vbx-subscriptions input[name=list]').eq(1);
-		var $form=$('.vbx-subscriptions form:eq(2)');
+		var $input=$('.vbx-subscriptions form.update-dial input[name=list]');
+		var $form=$('.vbx-subscriptions form.update-dial');
 		$('.vbx-subscriptions form:visible').not($form).add('.vbx-subscriptions .subscriber:not(.'+id+')').slideUp();
 		$form[list==$input.val()?'slideToggle':'slideDown']();
 		$form.children('h3').children('span').text($list.children().children('span').eq(0).text());
