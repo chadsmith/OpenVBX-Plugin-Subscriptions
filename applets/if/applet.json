@@ -1,0 +1,8 @@
+{
+	"name" : "If Member",
+	"sms_name" : "If Member",
+	"voice_title" : "If Member",
+	"sms_title" : "If Member",
+	"description" : "Redirect if the sender is subscribed to a list.",
+	"type" : ["sms", "voice"]
+}
