@@ -24,10 +24,10 @@
 		$ci->twilio = new TwilioRestClient($ci->twilio_sid, $ci->twilio_token, $ci->twilio_endpoint);
 		if($id&&($flow = OpenVBX::getFlows(array('id' => $id, 'tenant_id' => $tenant_id)))&&$flow[0]->values['data'])
 			foreach($subscribers as $subscriber)
-				$ci->twilio->request("Accounts/{$this->twilio_sid}/Calls", 'POST', array('Caller' => $number, 'Called' => $subscriber->value, 'Url' => site_url('twiml/start/voice/'.$id)));
+				$ci->twilio->request("Accounts/{$this->twilio_sid}/Calls", 'POST', array('From' => $number, 'To' => $subscriber->value, 'Url' => site_url('twiml/start/voice/'.$id)));
 		elseif($message)
 			foreach($subscribers as $subscriber)
-				$ci->twilio->request("Accounts/{$this->twilio_sid}/SMS/Messages", 'POST', array('To' => $subscriber->value, 'From' => $number, 'Body' => $message));
+				$ci->twilio->request("Accounts/{$this->twilio_sid}/SMS/Messages", 'POST', array('From' => $number, 'To' => $subscriber->value, 'Body' => $message));
 	}
 	if(($list = intval($_POST['list']))&&preg_match_all('/(?:\([2-9][0-8]\d\)\ ?|[2-9][0-8]\d[\- \.\/]?)[2-9]\d{2}[- \.\/]?\d{4}\b/', $_POST['numbers'], $numbers)&&$ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows()){
 		$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list=%d', $list))->result();

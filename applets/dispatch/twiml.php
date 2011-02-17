@@ -34,7 +34,7 @@ if($dispatch){
 	$ci->twilio = new TwilioRestClient($ci->twilio_sid, $ci->twilio_token, $ci->twilio_endpoint);
 	if($body&&count($subscribers))
 		foreach($subscribers as $subscriber)
-			$ci->twilio->request("Accounts/{$ci->twilio_sid}/SMS/Messages", 'POST', array('To' => $subscriber->value, 'From' => $number, 'Body' => $body));
+			$ci->twilio->request("Accounts/{$ci->twilio_sid}/SMS/Messages", 'POST', array('From' => $number, 'To' => $subscriber->value, 'Body' => $body));
 	$dispatched = AppletInstance::getDropZoneUrl('dispatched');
 	if(!empty($dispatched))
 		$response->addRedirect($dispatched);
