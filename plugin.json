@@ -8,5 +8,11 @@
 		"url" : "subscriptions",
 		"script" : "subscriptions.php",
 		"label" : "Manage Lists"
+	},
+	{
+		"menu" : "Subscriptions",
+		"url" : "subscriptions/schedule",
+		"script" : "schedule.php",
+		"label" : "Schedule Update"
 	}]
 }
