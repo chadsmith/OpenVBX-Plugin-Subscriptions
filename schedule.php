@@ -6,12 +6,16 @@
 	foreach($queries as $query)
 		if(trim($query))
 			$ci->db->query($query);
-	if($_POST['type'] && ($list = intval($_POST['list'])) && $ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows()) {
+	if(!empty($_POST['type'])) {
+		$list = intval($_POST['list']);
+		if($ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id = %d AND tenant = %d', $list, $tenant_id))->num_rows())
+			$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list = %d', $list))->result();
+		else
+			$subscribers = array();
 		$type = $_POST['type'];
-		$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list=%d', $list))->result();
 		$callerId = normalize_phone_to_E164($_POST['callerId']);
 		$time = strtotime($_POST['date'] . ' ' . $_POST['time']);
-		if('sms' == $type && $_POST['message']) {
+		if('sms' == $type && !empty($_POST['message'])) {
 			foreach($subscribers as $subscriber)
 				$ci->db->insert('outbound_queue', array(
 					'tenant' => $tenant_id,
@@ -26,7 +30,7 @@
 		}
 		elseif('call' == $type) {
 			$flow = OpenVBX::getFlows(array('id' => $_POST['flow'], 'tenant_id' => $tenant_id));
-			if($flow && $flow[0]->values['data'])
+			if($flow && count($subscribers) && $flow[0]->values['data'])
 				foreach($subscribers as $subscriber)
 					$ci->db->insert('outbound_queue', array(
 						'tenant' => $tenant_id,
@@ -41,7 +45,7 @@
 					));
 		}
 	}
-	$lists = $ci->db->query(sprintf('SELECT id, name FROM subscribers_lists WHERE tenant=%d', $tenant_id))->result();
+	$lists = $ci->db->query(sprintf('SELECT id, name FROM subscribers_lists WHERE tenant = %d', $tenant_id))->result();
 	$flows = OpenVBX::getFlows(array('tenant_id' => $tenant_id));
 	OpenVBX::addJS('jquery-ui-1.7.3.custom.min.js');
 	OpenVBX::addJS('schedule.js');
