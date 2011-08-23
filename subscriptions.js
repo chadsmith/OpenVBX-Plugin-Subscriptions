@@ -20,7 +20,7 @@ $(function(){
 		var $form=$('.vbx-subscriptions form:not(.add):visible');
 		$('.vbx-subscriptions .subscriber:not(.' + id + '):visible').slideUp();
 		$('.vbx-subscriptions .subscriber.' + id).slideToggle();
-		$form[id.match(/([\d]+)/)[1] != $form.find('input[name=list]').val() ? 'slideUp' : 'show']();
+		$form[id.match(/([\d]+)/)[1] != $form.find('input[name="list"]').val() ? 'slideUp' : 'show']();
 		return false;
 	});
 	$('.vbx-subscriptions .list a.delete').click(function() {
@@ -60,7 +60,7 @@ $(function(){
 		var $list = $(this).parent().parent().parent();
 		var id = $list.attr('id');
 		var list = id.match(/([\d]+)/)[1];
-		var $input = $('.vbx-subscriptions form.update-sms input[name=list]');
+		var $input = $('.vbx-subscriptions form.update-sms input[name="list"]');
 		var $form = $('.vbx-subscriptions form.update-sms');
 		$('.vbx-subscriptions form:visible').not($form).add('.vbx-subscriptions .subscriber:not(.' + id + ')').slideUp();
 		$form[list == $input.val() ? 'slideToggle' : 'slideDown']();
@@ -72,7 +72,7 @@ $(function(){
 		var $list = $(this).parent().parent().parent();
 		var id = $list.attr('id');
 		var list = id.match(/([\d]+)/)[1];
-		var $input = $('.vbx-subscriptions form.update-dial input[name=list]');
+		var $input = $('.vbx-subscriptions form.update-dial input[name="list"]');
 		var $form = $('.vbx-subscriptions form.update-dial');
 		$('.vbx-subscriptions form:visible').not($form).add('.vbx-subscriptions .subscriber:not(.' + id + ')').slideUp();
 		$form[list == $input.val() ? 'slideToggle' : 'slideDown']();
