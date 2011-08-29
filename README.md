@@ -110,6 +110,6 @@ Once installed, SUBSCRIPTIONS will appear in the OpenVBX sidebar
 
 ## OpenVBX requirements ##
 
-The scheduling portion of this plugin requires my [Outbound Flows plugin][2] and a modified version of OpenVBX to allow for plugin hooks, subpages and cron jobs. Download the modified version from my fork [here][4].
+The scheduling portion of this plugin requires my [Outbound Flows plugin][2].
 
 [4]: https://github.com/chadsmith/OpenVBX
