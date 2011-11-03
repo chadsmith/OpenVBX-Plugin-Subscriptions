@@ -36,7 +36,7 @@ $(function(){
 				},
 				dataType: 'text'
 			});
-		return false
+		return false;
 	});
 	$('.vbx-subscriptions .subscriber a.delete').click(function() {
 		var $subscriber = $(this).parent().parent().parent();
@@ -54,7 +54,7 @@ $(function(){
 				},
 				dataType: 'text'
 			});
-		return false
+		return false;
 	});
 	$('.vbx-subscriptions a.sms').click(function() {
 		var $list = $(this).parent().parent().parent();
@@ -66,7 +66,7 @@ $(function(){
 		$form[list == $input.val() ? 'slideToggle' : 'slideDown']();
 		$form.children('h3').children('span').text($list.children().children('span').eq(0).text());
 		$input.val(list);
-		return false
+		return false;
 	});
 	$('.vbx-subscriptions a.call').click(function() {
 		var $list = $(this).parent().parent().parent();
@@ -78,6 +78,6 @@ $(function(){
 		$form[list == $input.val() ? 'slideToggle' : 'slideDown']();
 		$form.children('h3').children('span').text($list.children().children('span').eq(0).text());
 		$input.val(list);
-		return false
+		return false;
 	});
-})
+});

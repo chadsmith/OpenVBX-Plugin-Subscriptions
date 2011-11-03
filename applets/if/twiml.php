@@ -8,9 +8,9 @@ if(!empty($_REQUEST['From'])) {
 	$next = AppletInstance::getDropZoneUrl($subscriber ? 'pass' : 'fail');
 }
 
-$response = new Response();
+$response = new TwimlResponse;
 
 if(!empty($next))
-	$response->addRedirect($next);
+	$response->redirect($next);
 
-$response->Respond();
+$response->respond();

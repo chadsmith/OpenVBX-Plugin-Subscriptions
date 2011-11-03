@@ -24,14 +24,14 @@
 	<h2>Members</h2>
 	<div class="vbx-full-pane">
 		<?php echo AppletUI::DropZone('pass'); ?>
-	</div><!-- .vbx-full-pane -->
+	</div>
 	<h2>Non-members</h2>
 	<div class="vbx-full-pane">
 		<?php echo AppletUI::DropZone('fail'); ?>
-	</div><!-- .vbx-full-pane -->
+	</div>
 <?php else: ?>
 	<div class="vbx-full-pane">
 		<h3>You need to create a subscription list first.</h3>
 	</div>
 <?php endif; ?>
-</div><!-- .vbx-applet -->
+</div>

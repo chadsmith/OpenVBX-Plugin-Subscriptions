@@ -28,27 +28,23 @@ if(!empty($_REQUEST['From'])) {
 		}
 }
 
-$response = new Response();
+$response = new TwimlResponse;
 
-if($dispatch){
+if($dispatch) {
 	$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list = %d', $list))->result();
-	require_once(APPPATH . 'libraries/twilio.php');
-	$ci->twilio = new TwilioRestClient($ci->twilio_sid, $ci->twilio_token, $ci->twilio_endpoint);
-	if($body&&count($subscribers))
+	require_once(APPPATH . 'libraries/Services/Twilio.php');
+	$service = new Services_Twilio($ci->twilio_sid, $ci->twilio_token);
+	if($body && count($subscribers))
 		foreach($subscribers as $subscriber)
-			$ci->twilio->request("Accounts/{$ci->twilio_sid}/SMS/Messages", 'POST', array(
-				'From' => $number,
-				'To' => $subscriber->value,
-				'Body' => $body
-			));
+			$service->account->sms_messages->create($number, $subscriber->value, $body);
 	$dispatched = AppletInstance::getDropZoneUrl('dispatched');
 	if(!empty($dispatched))
-		$response->addRedirect($dispatched);
+		$response->redirect($dispatched);
 }
-else{
+else {
 	$next = AppletInstance::getDropZoneUrl('next');
 	if(!empty($next))
-		$response->addRedirect($next);
+		$response->redirect($next);
 }
 
-$response->Respond();
+$response->respond();
