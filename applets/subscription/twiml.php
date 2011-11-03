@@ -5,7 +5,7 @@ $action = AppletInstance::getValue('action');
 
 if(!empty($_REQUEST['From'])) {
 	$number = normalize_phone_to_E164($_REQUEST['From']);
-	if('add' == $action){
+	if('add' == $action) {
 		if(!$ci->db->query(sprintf('SELECT id FROM subscribers WHERE list = %d AND value = %s', $list, $number))->num_rows())
 			$ci->db->insert('subscribers', array(
 				'list' => $list,
@@ -17,10 +17,10 @@ if(!empty($_REQUEST['From'])) {
 		$ci->db->delete('subscribers', array('list' => $list, 'value' => $number));
 }
 
-$response = new Response();
+$response = new TwimlResponse;
 
 $next = AppletInstance::getDropZoneUrl('next');
 if(!empty($next))
-	$response->addRedirect($next);
+	$response->redirect($next);
 
-$response->Respond();
+$response->respond();

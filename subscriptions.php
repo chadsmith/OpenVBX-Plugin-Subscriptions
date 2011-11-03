@@ -10,7 +10,7 @@
 		$remove = intval($_POST['remove']);
 		if(!empty($_POST['list'])) {
 			$list = intval($_POST['list']);
-			if($ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id=%d AND tenant=%d', $list, $tenant_id))->num_rows())
+			if($ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id = %d AND tenant = %d', $list, $tenant_id))->num_rows())
 				$ci->db->delete('subscribers', array('id' => $remove, 'list' => $list));
 		}
 		else {
@@ -28,27 +28,17 @@
 			$subscribers = array();
 		$type = $_POST['type'];
 		$callerId = normalize_phone_to_E164($_POST['callerId']);
-		require_once(APPPATH . 'libraries/twilio.php');
-		$ci->twilio = new TwilioRestClient($ci->twilio_sid, $ci->twilio_token, $ci->twilio_endpoint);
+		$account = OpenVBX::getAccount();
 		if('sms' == $type && !empty($_POST['message'])) {
 			if(count($subscribers))
 				foreach($subscribers as $subscriber)
-					$ci->twilio->request("Accounts/{$this->twilio_sid}/SMS/Messages", 'POST', array(
-						'From' => $callerId,
-						'To' => $subscriber->value,
-						'Body' => $_POST['message']
-					));
+				  $account->sms_messages->create($callerId, $subscriber->value, $_POST['message']);
 		}
 		elseif('call' == $type) {
 			$flow = OpenVBX::getFlows(array('id' => $_POST['flow'], 'tenant_id' => $tenant_id));
 			if($flow && count($subscribers) && $flow[0]->values['data'])
 				foreach($subscribers as $subscriber)
-					$ci->twilio->request("Accounts/{$this->twilio_sid}/Calls", 'POST', array(
-						'From' => $callerId,
-						'To' => $subscriber->value,
-						'Url' => site_url('twiml/start/voice/' . $flow[0]->values['id'])
-					));
-
+          $account->calls->create($callerId, $subscriber->value, site_url('twiml/start/voice/' . $flow[0]->values['id']));
 		}
 	}
 	if(!empty($_POST['numbers']) && preg_match_all('/(?:\([2-9][0-8]\d\)\ ?|[2-9][0-8]\d[\- \.\/]?)[2-9]\d{2}[- \.\/]?\d{4}\b/', $_POST['numbers'], $numbers)) {
