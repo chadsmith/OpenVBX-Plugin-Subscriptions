@@ -124,13 +124,13 @@
 		height: 24px;
 		width: 24px;
 		text-indent: -999em;
-		background: transparent url(/assets/i/standard-icons-sprite.png) no-repeat 0 0;
+		background: transparent url(<?php echo asset_url('/assets/i/standard-icons-sprite.png'); ?>) no-repeat 0 0;
 	}
 	.vbx-subscriptions a.sms {
 		background-position: -34px 0;
 	}
 	.vbx-subscriptions a.delete {
-		background: transparent url(/assets/i/action-icons-sprite.png) no-repeat -68px 0;
+		background: transparent url(<?php echo asset_url('/assets/i/action-icons-sprite.png'); ?>) no-repeat -68px 0;
 	}
 </style>
 <div class="vbx-content-main">
