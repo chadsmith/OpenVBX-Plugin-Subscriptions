@@ -41,7 +41,7 @@
           $account->calls->create($callerId, $subscriber->value, site_url('twiml/start/voice/' . $flow[0]->values['id']));
 		}
 	}
-	if(!empty($_POST['numbers']) && preg_match_all('/(?:\([2-9][0-8]\d\)\ ?|[2-9][0-8]\d[\- \.\/]?)[2-9]\d{2}[- \.\/]?\d{4}\b/', $_POST['numbers'], $numbers)) {
+	if(!empty($_POST['numbers']) && preg_match_all('/\d{10,15}\b/', preg_replace('/[^0-9\n]+/', '', $_POST['numbers']), $numbers)) {
 		$list = intval($_POST['list']);
 		if($ci->db->query(sprintf('SELECT id FROM subscribers_lists WHERE id = %d AND tenant = %d', $list, $tenant_id))->num_rows()) {
 			$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list = %d', $list))->result();
