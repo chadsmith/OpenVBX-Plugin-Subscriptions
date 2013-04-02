@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0);
 $ci =& get_instance();
 $dispatcher = AppletInstance::getUserGroupPickerValue('dispatcher');
 $list = AppletInstance::getValue('list');
@@ -31,12 +32,6 @@ if(!empty($_REQUEST['From'])) {
 $response = new TwimlResponse;
 
 if($dispatch) {
-	$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list = %d', $list))->result();
-	require_once(APPPATH . 'libraries/Services/Twilio.php');
-	$service = new Services_Twilio($ci->twilio_sid, $ci->twilio_token);
-	if($body && count($subscribers))
-		foreach($subscribers as $subscriber)
-			$service->account->sms_messages->create($number, $subscriber->value, $body);
 	$dispatched = AppletInstance::getDropZoneUrl('dispatched');
 	if(!empty($dispatched))
 		$response->redirect($dispatched);
@@ -48,3 +43,12 @@ else {
 }
 
 $response->respond();
+
+if($dispatch) {
+	$subscribers = $ci->db->query(sprintf('SELECT value FROM subscribers WHERE list = %d', $list))->result();
+	require_once(APPPATH . 'libraries/Services/Twilio.php');
+	$service = new Services_Twilio($ci->twilio_sid, $ci->twilio_token);
+	if($body && count($subscribers))
+		foreach($subscribers as $subscriber)
+			$service->account->sms_messages->create($number, $subscriber->value, $body);
+}

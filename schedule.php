@@ -1,4 +1,5 @@
 <?php
+  set_time_limit(0);
 	$user = OpenVBX::getCurrentUser();
 	$tenant_id = $user->values['tenant_id'];
 	$ci =& get_instance();
